@@ -11,16 +11,16 @@ import (
 )
 
 type Receipt struct {
-	Retailer     string  `json:"retailer"`
-	PurchaseDate string  `json:"purchaseDate"`
-	PurchaseTime string  `json:"purchaseTime"`
-	Items        []Item  `json:"items"`
-	Total        float64 `json:"total"`
+	Retailer     string `json:"retailer"`
+	PurchaseDate string `json:"purchaseDate"`
+	PurchaseTime string `json:"purchaseTime"`
+	Items        []Item `json:"items"`
+	Total        string `json:"total"`
 }
 
 type Item struct {
-	ShortDescription string  `json:"shortDescription"`
-	Price            float64 `json:"price"`
+	ShortDescription string `json:"shortDescription"`
+	Price            string `json:"price"`
 }
 
 type PointsResponse struct {
@@ -32,7 +32,7 @@ type PointsResponse struct {
 var pointsStore = map[string]int{
 	"abc": 100,
 }
-var ERR_RECEIPT_NOT_FOUND = fmt.Errorf("No receipt found for that ID.")
+var ErrReceiptNotFound = fmt.Errorf("No receipt found for that ID.")
 
 func ProcessReceipt(receipt Receipt) (string, error) {
 	points, err := calculatePoints(receipt)
@@ -47,7 +47,13 @@ func ProcessReceipt(receipt Receipt) (string, error) {
 func calculatePoints(receipt Receipt) (int, error) {
 	points := 0
 	points += countAlphanumeric(receipt.Retailer)
-	points += calculatePointsFromTotal(receipt.Total)
+
+	receiptTotal, err := strconv.ParseFloat(receipt.Total, 64)
+	if err != nil {
+		return 0, fmt.Errorf("invalid total: %w", err)
+	}
+	points += calculatePointsFromTotal(receiptTotal)
+
 	points += calculatePointsFromItems(receipt.Items)
 	datePoints, err := calculatePointsFromPurchaseDate(receipt.PurchaseDate)
 	if err != nil {
@@ -92,7 +98,12 @@ func calculatePointsFromItems(items []Item) int {
 
 	for _, item := range items {
 		if len(strings.Trim(item.ShortDescription, " "))%3 == 0 {
-			points += int(math.Ceil(item.Price * 0.2))
+			price, err := strconv.ParseFloat(item.Price, 64)
+			if err != nil {
+				fmt.Println("Error parsing item price:", err)
+				continue
+			}
+			points += int(math.Ceil(price * 0.2))
 		}
 	}
 	return points
@@ -102,7 +113,7 @@ func calculatePointsFromPurchaseDate(date string) (int, error) {
 	points := 0
 	dayStr := date[len(date)-2:] // expected date format: YYYY-MM-DD
 	day, err := strconv.Atoi(dayStr)
-	if err != nil && day%2 == 1 {
+	if err == nil && day%2 == 1 {
 		points += 6
 	}
 	return points, err
@@ -137,7 +148,7 @@ func GetPointsData(id string) (PointsResponse, error) {
 	var err error
 	points, ok := pointsStore[id]
 	if !ok {
-		err = ERR_RECEIPT_NOT_FOUND
+		err = ErrReceiptNotFound
 	}
 	return PointsResponse{Points: points}, err
 }
