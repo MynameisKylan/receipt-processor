@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type ProcessResposne struct {
+type ProcessResponse struct {
 	ID string `json:"id"`
 }
 
@@ -26,7 +26,7 @@ func ProcessHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseData := ProcessResposne{ID: id}
+	responseData := ProcessResponse{ID: id}
 	marshaledData, err := json.Marshal(responseData)
 	if err != nil {
 		http.Error(w, "Error marshaling response data", http.StatusInternalServerError)
