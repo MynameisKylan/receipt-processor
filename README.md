@@ -2,8 +2,6 @@
 
 Built as part of the [Fetch Rewards Challenge](https://github.com/fetch-rewards/receipt-processor-challenge).
 
-## Usage
-
 ### Prerequisites
 
 - Go 1.22 or later
@@ -48,3 +46,9 @@ The service exposes two endpoints:
    - Path: `/receipts/{id}/points`
    - Method: GET
    - Response: JSON containing the points awarded
+
+#### Example
+```bash
+curl http://localhost:8181/receipts/abc/points
+```
+
