@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 
@@ -9,6 +10,10 @@ import (
 )
 
 func main() {
+	var port int
+	flag.IntVar(&port, "port", 8181, "Port number to run the server on")
+	flag.Parse()
+
 	fmt.Println("Initializing receipt processor service...")
 	r := mux.NewRouter()
 
@@ -16,8 +21,8 @@ func main() {
 	r.HandleFunc("/receipts/process", points.ProcessHandler)
 	r.HandleFunc("/receipts/{id}/points", points.PointsHandler)
 
-	fmt.Println("Server starting on :8181")
-	err := http.ListenAndServe(":8181", r)
+	fmt.Printf("Server starting on port %d\n", port)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), r)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 	}
