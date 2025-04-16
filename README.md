@@ -11,7 +11,7 @@ Built as part of the [Fetch Rewards Challenge](https://github.com/fetch-rewards/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Mynameiskylan/receipt-processor.git
+   git clone https://github.com/MynameisKylan/receipt-processor.git
    cd receipt-processor
    ```
 
@@ -39,7 +39,7 @@ The service exposes two endpoints:
 1. **Process Receipts** - Submit a receipt for processing
    - Path: `/receipts/process`
    - Method: POST
-   - Request Body: Receipt JSON (see format below)
+   - Request Body: Receipt JSON
    - Response: JSON containing an ID for the receipt
 
 2. **Get Points** - Get the points awarded for a receipt
